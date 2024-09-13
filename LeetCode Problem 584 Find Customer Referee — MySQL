@@ -43,6 +43,9 @@ Solution:
 SELECT name
 FROM Customer
 WHERE referee_id != 2 OR referee_id IS NULL;
+
+Discription: 
+
 SELECT name: This part of the query specifies the column you want to include in the result set. In this case, you want to retrieve the name of customers who meet the criteria.
 FROM Customer: Here, you specify the table from which you want to select data. In this case, it's the Customer table.
 WHERE referee_id != 2 OR referee_id IS NULL: This is the crucial part of the query where you set the conditions for selecting rows. You use the WHERE clause to filter rows based on the following conditions:
