@@ -1,0 +1,56 @@
+Problem:
+Table: Customer
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| name        | varchar |
+| referee_id  | int     |
++-------------+---------+
+In SQL, id is the primary key column for this table.
+Each row of this table indicates the id of a customer, their name, and the id of the customer who referred them.
+Find the names of the customer that are not referred by the customer with id = 2.
+
+Return the result table in any order.
+
+The result format is in the following example.
+
+Example 1:
+
+Input: 
+Customer table:
++----+------+------------+
+| id | name | referee_id |
++----+------+------------+
+| 1  | Will | null       |
+| 2  | Jane | null       |
+| 3  | Alex | 2          |
+| 4  | Bill | null       |
+| 5  | Zack | 1          |
+| 6  | Mark | 2          |
++----+------+------------+
+Output: 
++------+
+| name |
++------+
+| Will |
+| Jane |
+| Bill |
+| Zack |
++------+
+Solution:
+SELECT name
+FROM Customer
+WHERE referee_id != 2 OR referee_id IS NULL;
+SELECT name: This part of the query specifies the column you want to include in the result set. In this case, you want to retrieve the name of customers who meet the criteria.
+FROM Customer: Here, you specify the table from which you want to select data. In this case, it's the Customer table.
+WHERE referee_id != 2 OR referee_id IS NULL: This is the crucial part of the query where you set the conditions for selecting rows. You use the WHERE clause to filter rows based on the following conditions:
+referee_id != 2: This condition checks if the referee_id column is not equal to 2. It ensures that customers referred by someone other than customer 2 are included in the result.
+OR referee_id IS NULL: This condition checks if the referee_id column is NULL, indicating that the customer was not referred by anyone. It ensures that customers who were not referred at all are also included in the result.
+By using OR between these conditions, you ensure that customers who meet either of these conditions are selected.
+
+The result of this query is a list of customer names who were not referred by customer 2. In the example, customers Will, Jane, Bill, and Zack meet these criteria, so their names are returned in the output.
+
+Link to problem:
+https://leetcode.com/problems/find-customer-referee/?envType=study-plan-v2&envId=top-sql-50
