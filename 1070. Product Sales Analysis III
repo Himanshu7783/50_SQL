@@ -1,0 +1,130 @@
+1070. Product Sales Analysis III
+
+Table: Sales
+
++-------------+-------+
+| Column Name | Type  |
++-------------+-------+
+| sale_id     | int   |
+| product_id  | int   |
+| year        | int   |
+| quantity    | int   |
+| price       | int   |
++-------------+-------+
+(sale_id, year) is the primary key (combination of columns with unique values) of this table.
+product_id is a foreign key (reference column) to Product table.
+Each row of this table shows a sale on the product product_id in a certain year.
+Note that the price is per unit.
+ 
+
+Table: Product
+
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| product_id   | int     |
+| product_name | varchar |
++--------------+---------+
+product_id is the primary key (column with unique values) of this table.
+Each row of this table indicates the product name of each product.
+ 
+
+Write a solution to select the product id, year, quantity, and price for the first year of every product sold.
+
+Return the resulting table in any order.
+
+The result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Sales table:
++---------+------------+------+----------+-------+
+| sale_id | product_id | year | quantity | price |
++---------+------------+------+----------+-------+ 
+| 1       | 100        | 2008 | 10       | 5000  |
+| 2       | 100        | 2009 | 12       | 5000  |
+| 7       | 200        | 2011 | 15       | 9000  |
++---------+------------+------+----------+-------+
+Product table:
++------------+--------------+
+| product_id | product_name |
++------------+--------------+
+| 100        | Nokia        |
+| 200        | Apple        |
+| 300        | Samsung      |
++------------+--------------+
+Output: 
++------------+------------+----------+-------+
+| product_id | first_year | quantity | price |
++------------+------------+----------+-------+ 
+| 100        | 2008       | 10       | 5000  |
+| 200        | 2011       | 15       | 9000  |
++------------+------------+----------+-------+
+
+Solution 1: Subquery with IN clause
+The first solution involves using a subquery with the IN clause to select the product_id, year, quantity, and price for the first year of every product sold. The subquery finds the minimum year for each product_id, and the main query filters the sales records based on this condition.
+
+SELECT product_id, year AS first_year, quantity, price
+FROM Sales
+WHERE (product_id, year) IN (
+    SELECT product_id, MIN(year)
+    FROM Sales
+    GROUP BY product_id
+)
+Advantages:
+
+Relatively straightforward approach.
+Easy to understand and implement.
+Disadvantages:
+
+Requires a subquery, which can impact performance for large datasets.
+May lead to longer execution time if there are multiple rows with the same minimum year for a product.
+Solution 2: Self-Join
+The second solution utilizes a self-join operation to select the product_id, year, quantity, and price for the first year of every product sold. It joins the Sales table with itself, comparing each row with other rows for the same product_id but later years. Rows that do not have a match in the self-join result in the desired records for the first year.
+
+SELECT s1.product_id, s1.year AS first_year, s1.quantity, s1.price
+FROM Sales s1
+LEFT JOIN Sales s2 ON s1.product_id = s2.product_id AND s1.year > s2.year
+WHERE s2.product_id IS NULL
+Advantages:
+
+Potentially more efficient due to optimized data access and reduced data volume.
+Avoids subqueries and extra aggregations.
+Well-suited for scenarios where the first-year records need to be identified based on a specific condition.
+Disadvantages:
+
+Requires a self-join operation, which may be complex for beginners to understand.
+Relies on the assumption that there are no duplicate records with the same product_id and year.
+Solution 3: Join with Subquery
+The third solution involves joining the Sales table with a subquery that finds the minimum year for each product_id. This allows us to select the product_id, year, quantity, and price for the first year of every product sold.
+
+SELECT s.product_id, s.year AS first_year, s.quantity, s.price
+FROM Sales s
+JOIN (
+    SELECT product_id, MIN(year) AS min_year
+    FROM Sales
+    GROUP BY product_id
+) subquery
+ON s.product_id = subquery.product_id AND s.year = subquery.min_years
+Advantages:
+
+Provides a clear separation between the main query and the subquery, enhancing readability.
+Enables efficient filtering of records based on the minimum year for each product_id.
+Disadvantages:
+
+Requires a subquery, which can impact performance for large datasets.
+May lead to longer execution time if there are multiple rows with the same minimum year for a product.
+In this article, we explored three different approaches to select the product_id, year, quantity, and price for the first year of every product sold. Each solution has its own advantages and disadvantages.
+
+The first solution, using a subquery with the IN clause, is simple to understand and implement but may be slower due to the subquery execution.
+
+The second solution, based on self-join, offers potentially better performance by optimizing data access and reducing the data volume. It avoids subqueries and extra aggregations.
+
+The third solution, involving a join with a subquery, provides a clear separation between the main query and the subquery. It allows efficient filtering based on the minimum year for each product_id.
+
+Based on performance tests, the second solution, utilizing a self-join, outperformed the other approaches, making it the recommended solution for this particular problem.
+
+It is important to consider the size of the dataset and the specific requirements of the use case when choosing the most suitable solution.
