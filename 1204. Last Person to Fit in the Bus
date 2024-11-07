@@ -1,0 +1,98 @@
+1204. Last Person to Fit in the Bus
+
+Table: Queue
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| person_id   | int     |
+| person_name | varchar |
+| weight      | int     |
+| turn        | int     |
++-------------+---------+
+person_id column contains unique values.
+This table has the information about all people waiting for a bus.
+The person_id and turn columns will contain all numbers from 1 to n, where n is the number of rows in the table.
+turn determines the order of which the people will board the bus, where turn=1 denotes the first person to board and turn=n denotes the last person to board.
+weight is the weight of the person in kilograms.
+ 
+
+There is a queue of people waiting to board a bus. However, the bus has a weight limit of 1000 kilograms, so there may be some people who cannot board.
+
+Write a solution to find the person_name of the last person that can fit on the bus without exceeding the weight limit. The test cases are generated such that the first person does not exceed the weight limit.
+
+Note that only one person can board the bus at any given turn.
+
+The result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Queue table:
++-----------+-------------+--------+------+
+| person_id | person_name | weight | turn |
++-----------+-------------+--------+------+
+| 5         | Alice       | 250    | 1    |
+| 4         | Bob         | 175    | 5    |
+| 3         | Alex        | 350    | 2    |
+| 6         | John Cena   | 400    | 3    |
+| 1         | Winston     | 500    | 6    |
+| 2         | Marie       | 200    | 4    |
++-----------+-------------+--------+------+
+Output: 
++-------------+
+| person_name |
++-------------+
+| John Cena   |
++-------------+
+Explanation: The folowing table is ordered by the turn for simplicity.
++------+----+-----------+--------+--------------+
+| Turn | ID | Name      | Weight | Total Weight |
++------+----+-----------+--------+--------------+
+| 1    | 5  | Alice     | 250    | 250          |
+| 2    | 3  | Alex      | 350    | 600          |
+| 3    | 6  | John Cena | 400    | 1000         | (last person to board)
+| 4    | 2  | Marie     | 200    | 1200         | (cannot board)
+| 5    | 4  | Bob       | 175    | ___          |
+| 6    | 1  | Winston   | 500    | ___          |
++------+----+-----------+--------+--------------+
+
+
+Step-by-Step Solution:
+Order by Turn:
+We need to order the people by their turn to simulate the boarding process.
+Calculate Cumulative Weight:
+For each person, calculate the cumulative weight as they board the bus. Stop once the total weight reaches or exceeds 1000 kg.
+Find the Last Person:
+The last person to board is the one whose cumulative weight is exactly 1000 kg or whose addition did not exceed the weight limit.
+Writing the SQL Query:
+WITH Boarding AS (
+    SELECT person_name, weight,
+           SUM(weight) OVER (ORDER BY turn) AS total_weight
+    FROM Queue
+)
+SELECT person_name
+FROM Boarding
+WHERE total_weight <= 1000
+ORDER BY total_weight DESC
+LIMIT 1;
+Explanation:
+WITH Boarding AS creates a Common Table Expression (CTE) that calculates the cumulative weight (total_weight) for each person as they board.
+SUM(weight) OVER (ORDER BY turn) calculates the running total of weights based on the boarding order (turn).
+WHERE total_weight <= 1000 filters out the people whose cumulative weight exceeds the bus limit.
+ORDER BY total_weight DESC LIMIT 1 returns the person who last boarded without exceeding the weight limit.
+What You Will Learn in This Solution:
+How to use window functions (SUM() OVER) to calculate running totals.
+Efficiently simulate processes like boarding in SQL using ORDER BY and LIMIT.
+Filtering results based on cumulative conditions such as weight limits.
+Follow Me for More SQL & Data Science Content:
+If you found this article helpful and want to dive deeper into SQL, data science, and more, make sure to check out my other content. 
+You can find video solutions, tips, and tutorials across various platforms:
+
+YouTube: Subscribe to my channel for detailed video solutions and tutorials. Hit the bell icon for updates!
+Instagram: Follow me on Instagram for daily insights and quick tutorials on data science and SQL.
+Twitter: Stay updated with bite-sized data science content.
+GitHub: Check out my GitHub for code repositories, projects, and more resources.
+Threads: Join the conversation on Threads for discussions, Q&A, and community support.
